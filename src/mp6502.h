@@ -17,7 +17,7 @@
  * Stack pointer holds the low 8 bits of the next FREE location
  * on the stack. The stack is located between 0x0100 and 0x01FF (256 bytes)
  * Pushing to stack causes stack pointer to be decremented. Opposite for
- * popping off stack. (CPU does not detect stack overflow (excessive pushing
+ * popping off stack. CPU does not detect stack overflow (excessive pushing
  * and popping) and will crash program.
  *
  * Accumulator: 8bit
@@ -100,7 +100,7 @@ public:
     mp6502();
     ~mp6502();
 
-    Bus* bus; // Data bus
+    Bus* bus{}; // Data bus
     uint16_t pc = 0x0000; // Program counter
     uint8_t sp = 0x00; // Stack pointer
     uint8_t acc = 0x00; // Accumulator
@@ -111,7 +111,7 @@ private:
 
     struct INSTRUCTION {
         std::string name;
-        uint8_t (mp6502::*opcode )() = nullptr;
+        uint8_t (mp6502::*opcode)() = nullptr;
         uint8_t (mp6502::*addr_mode)() = nullptr;
         uint8_t cycles = 0;
     };
@@ -125,7 +125,7 @@ private:
     //=========Bus communication functions==========//
     void connect_bus(Bus *b);
     uint8_t read(uint16_t addr);
-    void write(uint16_t addr, uint8_t data);
+    void write(uint16_t addr, uint8_t data) const;
 
     //==============Emulation variables=============//
     uint8_t data = 0x00; // Represents data that is read or written
@@ -228,8 +228,11 @@ private:
 
     //==============System operations===============//
     uint8_t BRK(); // Force an interrupt
-    uint8_t NOP(); // No operation
+    uint8_t NOP() const; // No operation
     uint8_t RTI(); // Return from interrupt
+
+    //=================Non-function=================//
+    uint8_t XXX(); // Illegal opcode
 
 };
 

@@ -1,7 +1,28 @@
 #include "mp6502.h"
 
 // Constructor
-mp6502::mp6502() = default;
+mp6502::mp6502() {
+    // Credit: olcNES
+    using a = mp6502;
+    lookup = {
+        { "BRK", &a::BRK, &a::IMM, 7 },{ "ORA", &a::ORA, &a::IZX, 6 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 3 },{ "ORA", &a::ORA, &a::ZP0, 3 },{ "ASL", &a::ASL, &a::ZP0, 5 },{ "???", &a::XXX, &a::IMP, 5 },{ "PHP", &a::PHP, &a::IMP, 3 },{ "ORA", &a::ORA, &a::IMM, 2 },{ "ASL", &a::ASL, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::NOP, &a::IMP, 4 },{ "ORA", &a::ORA, &a::ABS, 4 },{ "ASL", &a::ASL, &a::ABS, 6 },{ "???", &a::XXX, &a::IMP, 6 },
+        { "BPL", &a::BPL, &a::REL, 2 },{ "ORA", &a::ORA, &a::IZY, 5 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 4 },{ "ORA", &a::ORA, &a::ZPX, 4 },{ "ASL", &a::ASL, &a::ZPX, 6 },{ "???", &a::XXX, &a::IMP, 6 },{ "CLC", &a::CLC, &a::IMP, 2 },{ "ORA", &a::ORA, &a::ABY, 4 },{ "???", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 7 },{ "???", &a::NOP, &a::IMP, 4 },{ "ORA", &a::ORA, &a::ABX, 4 },{ "ASL", &a::ASL, &a::ABX, 7 },{ "???", &a::XXX, &a::IMP, 7 },
+        { "JSR", &a::JSR, &a::ABS, 6 },{ "AND", &a::AND, &a::IZX, 6 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "BIT", &a::BIT, &a::ZP0, 3 },{ "AND", &a::AND, &a::ZP0, 3 },{ "ROL", &a::ROL, &a::ZP0, 5 },{ "???", &a::XXX, &a::IMP, 5 },{ "PLP", &a::PLP, &a::IMP, 4 },{ "AND", &a::AND, &a::IMM, 2 },{ "ROL", &a::ROL, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 2 },{ "BIT", &a::BIT, &a::ABS, 4 },{ "AND", &a::AND, &a::ABS, 4 },{ "ROL", &a::ROL, &a::ABS, 6 },{ "???", &a::XXX, &a::IMP, 6 },
+        { "BMI", &a::BMI, &a::REL, 2 },{ "AND", &a::AND, &a::IZY, 5 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 4 },{ "AND", &a::AND, &a::ZPX, 4 },{ "ROL", &a::ROL, &a::ZPX, 6 },{ "???", &a::XXX, &a::IMP, 6 },{ "SEC", &a::SEC, &a::IMP, 2 },{ "AND", &a::AND, &a::ABY, 4 },{ "???", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 7 },{ "???", &a::NOP, &a::IMP, 4 },{ "AND", &a::AND, &a::ABX, 4 },{ "ROL", &a::ROL, &a::ABX, 7 },{ "???", &a::XXX, &a::IMP, 7 },
+        { "RTI", &a::RTI, &a::IMP, 6 },{ "EOR", &a::EOR, &a::IZX, 6 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 3 },{ "EOR", &a::EOR, &a::ZP0, 3 },{ "LSR", &a::LSR, &a::ZP0, 5 },{ "???", &a::XXX, &a::IMP, 5 },{ "PHA", &a::PHA, &a::IMP, 3 },{ "EOR", &a::EOR, &a::IMM, 2 },{ "LSR", &a::LSR, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 2 },{ "JMP", &a::JMP, &a::ABS, 3 },{ "EOR", &a::EOR, &a::ABS, 4 },{ "LSR", &a::LSR, &a::ABS, 6 },{ "???", &a::XXX, &a::IMP, 6 },
+        { "BVC", &a::BVC, &a::REL, 2 },{ "EOR", &a::EOR, &a::IZY, 5 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 4 },{ "EOR", &a::EOR, &a::ZPX, 4 },{ "LSR", &a::LSR, &a::ZPX, 6 },{ "???", &a::XXX, &a::IMP, 6 },{ "CLI", &a::CLI, &a::IMP, 2 },{ "EOR", &a::EOR, &a::ABY, 4 },{ "???", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 7 },{ "???", &a::NOP, &a::IMP, 4 },{ "EOR", &a::EOR, &a::ABX, 4 },{ "LSR", &a::LSR, &a::ABX, 7 },{ "???", &a::XXX, &a::IMP, 7 },
+        { "RTS", &a::RTS, &a::IMP, 6 },{ "ADC", &a::ADC, &a::IZX, 6 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 3 },{ "ADC", &a::ADC, &a::ZP0, 3 },{ "ROR", &a::ROR, &a::ZP0, 5 },{ "???", &a::XXX, &a::IMP, 5 },{ "PLA", &a::PLA, &a::IMP, 4 },{ "ADC", &a::ADC, &a::IMM, 2 },{ "ROR", &a::ROR, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 2 },{ "JMP", &a::JMP, &a::IND, 5 },{ "ADC", &a::ADC, &a::ABS, 4 },{ "ROR", &a::ROR, &a::ABS, 6 },{ "???", &a::XXX, &a::IMP, 6 },
+        { "BVS", &a::BVS, &a::REL, 2 },{ "ADC", &a::ADC, &a::IZY, 5 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 4 },{ "ADC", &a::ADC, &a::ZPX, 4 },{ "ROR", &a::ROR, &a::ZPX, 6 },{ "???", &a::XXX, &a::IMP, 6 },{ "SEI", &a::SEI, &a::IMP, 2 },{ "ADC", &a::ADC, &a::ABY, 4 },{ "???", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 7 },{ "???", &a::NOP, &a::IMP, 4 },{ "ADC", &a::ADC, &a::ABX, 4 },{ "ROR", &a::ROR, &a::ABX, 7 },{ "???", &a::XXX, &a::IMP, 7 },
+        { "???", &a::NOP, &a::IMP, 2 },{ "STA", &a::STA, &a::IZX, 6 },{ "???", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 6 },{ "STY", &a::STY, &a::ZP0, 3 },{ "STA", &a::STA, &a::ZP0, 3 },{ "STX", &a::STX, &a::ZP0, 3 },{ "???", &a::XXX, &a::IMP, 3 },{ "DEY", &a::DEY, &a::IMP, 2 },{ "???", &a::NOP, &a::IMP, 2 },{ "TXA", &a::TXA, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 2 },{ "STY", &a::STY, &a::ABS, 4 },{ "STA", &a::STA, &a::ABS, 4 },{ "STX", &a::STX, &a::ABS, 4 },{ "???", &a::XXX, &a::IMP, 4 },
+        { "BCC", &a::BCC, &a::REL, 2 },{ "STA", &a::STA, &a::IZY, 6 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 6 },{ "STY", &a::STY, &a::ZPX, 4 },{ "STA", &a::STA, &a::ZPX, 4 },{ "STX", &a::STX, &a::ZPY, 4 },{ "???", &a::XXX, &a::IMP, 4 },{ "TYA", &a::TYA, &a::IMP, 2 },{ "STA", &a::STA, &a::ABY, 5 },{ "TXS", &a::TXS, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 5 },{ "???", &a::NOP, &a::IMP, 5 },{ "STA", &a::STA, &a::ABX, 5 },{ "???", &a::XXX, &a::IMP, 5 },{ "???", &a::XXX, &a::IMP, 5 },
+        { "LDY", &a::LDY, &a::IMM, 2 },{ "LDA", &a::LDA, &a::IZX, 6 },{ "LDX", &a::LDX, &a::IMM, 2 },{ "???", &a::XXX, &a::IMP, 6 },{ "LDY", &a::LDY, &a::ZP0, 3 },{ "LDA", &a::LDA, &a::ZP0, 3 },{ "LDX", &a::LDX, &a::ZP0, 3 },{ "???", &a::XXX, &a::IMP, 3 },{ "TAY", &a::TAY, &a::IMP, 2 },{ "LDA", &a::LDA, &a::IMM, 2 },{ "TAX", &a::TAX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 2 },{ "LDY", &a::LDY, &a::ABS, 4 },{ "LDA", &a::LDA, &a::ABS, 4 },{ "LDX", &a::LDX, &a::ABS, 4 },{ "???", &a::XXX, &a::IMP, 4 },
+        { "BCS", &a::BCS, &a::REL, 2 },{ "LDA", &a::LDA, &a::IZY, 5 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 5 },{ "LDY", &a::LDY, &a::ZPX, 4 },{ "LDA", &a::LDA, &a::ZPX, 4 },{ "LDX", &a::LDX, &a::ZPY, 4 },{ "???", &a::XXX, &a::IMP, 4 },{ "CLV", &a::CLV, &a::IMP, 2 },{ "LDA", &a::LDA, &a::ABY, 4 },{ "TSX", &a::TSX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 4 },{ "LDY", &a::LDY, &a::ABX, 4 },{ "LDA", &a::LDA, &a::ABX, 4 },{ "LDX", &a::LDX, &a::ABY, 4 },{ "???", &a::XXX, &a::IMP, 4 },
+        { "CPY", &a::CPY, &a::IMM, 2 },{ "CMP", &a::CMP, &a::IZX, 6 },{ "???", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "CPY", &a::CPY, &a::ZP0, 3 },{ "CMP", &a::CMP, &a::ZP0, 3 },{ "DEC", &a::DEC, &a::ZP0, 5 },{ "???", &a::XXX, &a::IMP, 5 },{ "INY", &a::INY, &a::IMP, 2 },{ "CMP", &a::CMP, &a::IMM, 2 },{ "DEX", &a::DEX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 2 },{ "CPY", &a::CPY, &a::ABS, 4 },{ "CMP", &a::CMP, &a::ABS, 4 },{ "DEC", &a::DEC, &a::ABS, 6 },{ "???", &a::XXX, &a::IMP, 6 },
+        { "BNE", &a::BNE, &a::REL, 2 },{ "CMP", &a::CMP, &a::IZY, 5 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 4 },{ "CMP", &a::CMP, &a::ZPX, 4 },{ "DEC", &a::DEC, &a::ZPX, 6 },{ "???", &a::XXX, &a::IMP, 6 },{ "CLD", &a::CLD, &a::IMP, 2 },{ "CMP", &a::CMP, &a::ABY, 4 },{ "NOP", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 7 },{ "???", &a::NOP, &a::IMP, 4 },{ "CMP", &a::CMP, &a::ABX, 4 },{ "DEC", &a::DEC, &a::ABX, 7 },{ "???", &a::XXX, &a::IMP, 7 },
+        { "CPX", &a::CPX, &a::IMM, 2 },{ "SBC", &a::SBC, &a::IZX, 6 },{ "???", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "CPX", &a::CPX, &a::ZP0, 3 },{ "SBC", &a::SBC, &a::ZP0, 3 },{ "INC", &a::INC, &a::ZP0, 5 },{ "???", &a::XXX, &a::IMP, 5 },{ "INX", &a::INX, &a::IMP, 2 },{ "SBC", &a::SBC, &a::IMM, 2 },{ "NOP", &a::NOP, &a::IMP, 2 },{ "???", &a::SBC, &a::IMP, 2 },{ "CPX", &a::CPX, &a::ABS, 4 },{ "SBC", &a::SBC, &a::ABS, 4 },{ "INC", &a::INC, &a::ABS, 6 },{ "???", &a::XXX, &a::IMP, 6 },
+        { "BEQ", &a::BEQ, &a::REL, 2 },{ "SBC", &a::SBC, &a::IZY, 5 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 4 },{ "SBC", &a::SBC, &a::ZPX, 4 },{ "INC", &a::INC, &a::ZPX, 6 },{ "???", &a::XXX, &a::IMP, 6 },{ "SED", &a::SED, &a::IMP, 2 },{ "SBC", &a::SBC, &a::ABY, 4 },{ "NOP", &a::NOP, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 7 },{ "???", &a::NOP, &a::IMP, 4 },{ "SBC", &a::SBC, &a::ABX, 4 },{ "INC", &a::INC, &a::ABX, 7 },{ "???", &a::XXX, &a::IMP, 7 },
+    };
+}
 // Destructor
 mp6502::~mp6502() = default;
 
@@ -32,8 +53,8 @@ uint8_t mp6502::read(uint16_t addr) {
     return bus->read(addr, false);
 }
 
-void mp6502::write(uint16_t addr, uint8_t data) {
-    bus->write(addr, data);
+void mp6502::write(uint16_t addr, uint8_t data_write) const {
+    bus->write(addr, data_write);
 }
 
 //++++++++++++++++++++++++++++ADDRESSING MODES+++++++++++++++++++++++++++++++++++++//
@@ -213,86 +234,143 @@ uint8_t mp6502::STY() {
 }
 
 uint8_t mp6502::TAX() {
+    // Transfer accumulator to X register
     reg[X] = acc;
 
-
+    // Set flags
+    set_flag(Z, reg[X] == 0x00);
+    set_flag(N, reg[X] & 0x80);
     return 0;
 }
 
 uint8_t mp6502::TAY() {
-    // Implementation goes here
+    // Transfer accumulator to Y register
+    reg[Y] = acc;
+
+    // Set flags
+    set_flag(Z, reg[Y] == 0x00);
+    set_flag(N, reg[Y] & 0x80);
     return 0;
 }
 
 uint8_t mp6502::TXA() {
-    // Implementation goes here
+    // Transfer X register to accumulator
+    acc = reg[X];
+
+    // Set flags
+    set_flag(Z, acc == 0x00);
+    set_flag(N, acc & 0x80);
     return 0;
 }
 
 uint8_t mp6502::TYA() {
-    // Implementation goes here
+    // Transfer Y register to accumulator
+    acc = reg[Y];
+
+    // Set flags
+    set_flag(Z, acc == 0x00);
+    set_flag(N, acc & 0x80);
     return 0;
 }
 
 uint8_t mp6502::TSX() {
-    // Implementation goes here
+    // Transfer stack pointer to X register
+    reg[X] = sp;
+
+    // Set flags
+    set_flag(Z, reg[X] == 0x00);
+    set_flag(N, reg[X] & 0x80);
     return 0;
 }
 
 uint8_t mp6502::TXS() {
-    // Implementation goes here
+    // Transfer X register to stack pointer
+    sp = reg[X];
     return 0;
 }
 
 uint8_t mp6502::PHA() {
-    // Implementation goes here
+    // Push accumulator on stack
+    write(STACK_OFFSET + sp, acc);
+    sp++;
     return 0;
 }
 
 uint8_t mp6502::PHP() {
-    // Implementation goes here
+    // Push processor status on stack
+    write(STACK_OFFSET + sp, flags);
+    sp++;
     return 0;
 }
 
 uint8_t mp6502::PLA() {
-    // Implementation goes here
+    // Pop from stack to accumulator
+    sp--;
+    acc = read(STACK_OFFSET + sp);
+
+    // Set flags
+    set_flag(Z, acc == 0x00);
+    set_flag(N, acc & 0x80);
     return 0;
 }
 
 uint8_t mp6502::PLP() {
-    // Implementation goes here
+    // Pop from stack to processor status
+    sp--;
+    flags = read(STACK_OFFSET + sp);
     return 0;
 }
 
 uint8_t mp6502::AND() {
-
     // Fetch data
     fetch();
 
     // Perform AND operation
-    temp = acc & data;
+    acc &= data;
 
     // Set flags
-    set_flag(Z, temp == 0x0);
-    set_flag(N, temp & 0x80);
-
-    acc = temp;
-
+    set_flag(Z, acc == 0x0);
+    set_flag(N, acc & 0x80);
     return 0;
 }
 
 uint8_t mp6502::EOR() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Perform XOR operation
+    acc ^= data;
+
+    // Set flags
+    set_flag(Z, acc == 0x0);
+    set_flag(N, acc & 0x80);
     return 0;
 }
 
 uint8_t mp6502::ORA() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Perform OR operation
+    acc |= data;
+
+    // Set flags
+    set_flag(Z, acc == 0x0);
+    set_flag(N, acc & 0x80);
     return 0;
 }
 
 uint8_t mp6502::BIT() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Perform a bit test
+    temp = acc & data;
+
+    // Set flags
+    set_flag(Z, (temp & 0x00FF) == 0x00);
+    set_flag(V, data & (1 << 6));
+    set_flag(N, data & (1 << 7));
     return 0;
 }
 
@@ -305,7 +383,7 @@ uint8_t mp6502::ADC() {
 
     // Set flags
     set_flag(C, temp > 255);
-    set_flag(Z, temp == 0);
+    set_flag(Z, (temp & 0x00FF) == 0);
     set_flag(V, ~(acc ^ data) & (acc ^ temp) & 0x80);
     set_flag(N, temp & 0x80);
 
@@ -315,57 +393,124 @@ uint8_t mp6502::ADC() {
 }
 
 uint8_t mp6502::SBC() {
-    // Implementation goes here
-    return 0;
+    // Fetch data
+    fetch();
+
+    // Perform subtraction
+    temp = acc - data - (!get_flag(C));
+
+    // Set flags
+    set_flag(C, temp < 0x0100);
+    set_flag(Z, (temp & 0x00FF) == 0);
+    set_flag(V, ~(acc ^ data) & (acc ^ temp) & 0x80);
+    set_flag(N, temp & 0x80);
+
+    acc = temp & 0x00FF;
+    return 1;
 }
 
 uint8_t mp6502::CMP() {
-    // Implementation goes here
-    return 0;
+    // Fetch data
+    fetch();
+
+    // Set flags based on comparison
+    set_flag(C, acc >= data);
+    set_flag(Z, acc == data);
+    set_flag(N, (acc - data) & 0x80);
+    return 1;
 }
 
 uint8_t mp6502::CPX() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Set flags based on comparison
+    set_flag(C, reg[X] >= data);
+    set_flag(Z, reg[X] == data);
+    set_flag(N, (reg[X] - data) & 0x80);
     return 0;
 }
 
 uint8_t mp6502::CPY() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Set flags based on comparison
+    set_flag(C, reg[Y] >= data);
+    set_flag(Z, reg[Y] == data);
+    set_flag(N, (reg[Y] - data) & 0x80);
     return 0;
 }
 
 uint8_t mp6502::INC() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Increment and write data
+    data++;
+    write(addr_abs, data);
+
+    // Set flags
+    set_flag(Z, data == 0x00);
+    set_flag(N, data & 0x80);
     return 0;
 }
 
 uint8_t mp6502::INX() {
-    // Implementation goes here
+    // Increment X register
+    reg[X]++;
+
+    // Set flags
+    set_flag(Z, reg[X] == 0x00);
+    set_flag(N, reg[X] & 0x80);
     return 0;
 }
 
 uint8_t mp6502::INY() {
-    // Implementation goes here
+    // Increment Y register
+    reg[Y]++;
+
+    // Set flags
+    set_flag(Z, reg[Y] == 0x00);
+    set_flag(N, reg[Y] & 0x80);
     return 0;
 }
 
 uint8_t mp6502::DEC() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Decrement and write data
+    data--;
+    write(addr_abs, data);
+
+    // Set flags
+    set_flag(Z, data == 0x00);
+    set_flag(N, data & 0x80);
     return 0;
 }
 
 uint8_t mp6502::DEX() {
-    // Implementation goes here
+    // Decrement X register
+    reg[X]--;
+
+    // Set flags
+    set_flag(Z, reg[X] == 0x00);
+    set_flag(N, reg[X] & 0x80);
     return 0;
 }
 
 uint8_t mp6502::DEY() {
-    // Implementation goes here
+    // Decrement Y register
+    reg[Y]--;
+
+    // Set flags
+    set_flag(Z, reg[Y] == 0x00);
+    set_flag(N, reg[Y] & 0x80);
     return 0;
 }
 
 uint8_t mp6502::ASL() {
-
     // Fetch data
     fetch();
 
@@ -387,72 +532,196 @@ uint8_t mp6502::ASL() {
 }
 
 uint8_t mp6502::LSR() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Set flags and shift right
+    set_flag(C, data & 0x01);
+    temp = data >> 1;
+    set_flag(Z, (temp & 0x00FF) == 0x00);
+    set_flag(N, temp & 0x80);
+
+    if (lookup[opcode].addr_mode == &mp6502::IMP)
+        acc = temp & 0x00FF;
+    else
+        write(addr_abs, temp & 0x00FF);
     return 0;
 }
 
 uint8_t mp6502::ROL() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Shift left
+    temp = (data << 1) | get_flag(C);
+
+    // Set flags
+    set_flag(C, data & 0x80);
+    set_flag(Z, (temp & 0x00FF) == 0x00);
+    set_flag(N, temp & 0x80);
+
+    // Write back to memory
+    if (lookup[opcode].addr_mode == &mp6502::IMP)
+        acc = temp & 0x00FF;
+    else
+        write(addr_abs, temp & 0x00FF);
     return 0;
 }
 
 uint8_t mp6502::ROR() {
-    // Implementation goes here
+    // Fetch data
+    fetch();
+
+    // Shift right
+    temp = (data >> 1) | (get_flag(C) << 7);
+
+    // Set flags
+    set_flag(C, data & 0x01);
+    set_flag(Z, (temp & 0x00FF) == 0x00);
+    set_flag(N, temp & 0x80);
+
+    // Write back to memory
+    if (lookup[opcode].addr_mode == &mp6502::IMP)
+        acc = temp & 0x00FF;
+    else
+        write(addr_abs, temp & 0x00FF);
     return 0;
 }
 
 uint8_t mp6502::JMP() {
-    // Implementation goes here
+    // Set program counter
+    pc = addr_abs;
     return 0;
 }
 
 uint8_t mp6502::JSR() {
-    // Implementation goes here
+    // Decrement pc
+    pc--;
+
+    // Push pc to stack
+    write(STACK_OFFSET + sp, (pc >> 8) & 0x00FF);
+    sp++;
+    write(STACK_OFFSET + sp, pc & 0x00FF);
+    sp++;
+
+    // Set program counter
+    pc = addr_abs;
     return 0;
 }
 
 uint8_t mp6502::RTS() {
-    // Implementation goes here
+    // Pull pc from stack
+    sp--;
+    pc = read(STACK_OFFSET + sp);
+    sp--;
+    pc |= read(STACK_OFFSET + sp) << 8;
+
+    // Increment pc
+    pc++;
     return 0;
 }
 
 uint8_t mp6502::BCC() {
-    // Implementation goes here
+    if (!get_flag(C)) {
+        cycles++;
+        addr_abs = pc + addr_rel;
+
+        if ((addr_abs & 0xFF00) != (pc & 0xFF00))
+            cycles++;
+
+        pc = addr_abs;
+    }
     return 0;
 }
 
 uint8_t mp6502::BCS() {
-    // Implementation goes here
+    if (get_flag(C)) {
+        cycles++;
+        addr_abs = pc + addr_rel;
+
+        if ((addr_abs & 0xFF00) != (pc & 0xFF00))
+            cycles++;
+
+        pc = addr_abs;
+    }
     return 0;
 }
 
 uint8_t mp6502::BEQ() {
-    // Implementation goes here
+    if (get_flag(Z)) {
+        cycles++;
+        addr_abs = pc + addr_rel;
+
+        if ((addr_abs & 0xFF00) != (pc & 0xFF00))
+            cycles++;
+
+        pc = addr_abs;
+    }
     return 0;
 }
 
 uint8_t mp6502::BMI() {
-    // Implementation goes here
+    if (get_flag(N)) {
+        cycles++;
+        addr_abs = pc + addr_rel;
+
+        if ((addr_abs & 0xFF00) != (pc & 0xFF00))
+            cycles++;
+
+        pc = addr_abs;
+    }
     return 0;
 }
 
 uint8_t mp6502::BNE() {
-    // Implementation goes here
+    if (!get_flag(Z)) {
+        cycles++;
+        addr_abs = pc + addr_rel;
+
+        if ((addr_abs & 0xFF00) != (pc & 0xFF00))
+            cycles++;
+
+        pc = addr_abs;
+    }
     return 0;
 }
 
 uint8_t mp6502::BPL() {
-    // Implementation goes here
+    if (!get_flag(N)) {
+        cycles++;
+        addr_abs = pc + addr_rel;
+
+        if ((addr_abs & 0xFF00) != (pc & 0xFF00))
+            cycles++;
+
+        pc = addr_abs;
+    }
     return 0;
 }
 
 uint8_t mp6502::BVC() {
-    // Implementation goes here
+    if (!get_flag(V)) {
+        cycles++;
+        addr_abs = pc + addr_rel;
+
+        if ((addr_abs & 0xFF00) != (pc & 0xFF00))
+            cycles++;
+
+        pc = addr_abs;
+    }
     return 0;
 }
 
 uint8_t mp6502::BVS() {
-    // Implementation goes here
+    if (get_flag(V)) {
+        cycles++;
+        addr_abs = pc + addr_rel;
+
+        if ((addr_abs & 0xFF00) != (pc & 0xFF00))
+            cycles++;
+
+        pc = addr_abs;
+    }
     return 0;
 }
 
@@ -492,16 +761,43 @@ uint8_t mp6502::SEI() {
 }
 
 uint8_t mp6502::BRK() {
-    // Implementation goes here
+    pc++;
+
+    set_flag(I, true);
+    write(STACK_OFFSET + sp, (pc >> 8) & 0x00FF);
+    sp++;
+    write(STACK_OFFSET + sp, pc & 0x00FF);
+    sp++;
+
+    set_flag(B, true);
+    write(STACK_OFFSET + sp, flags);
+    sp++;
+    set_flag(B, false);
+
+    pc = (uint16_t)read(BRK_OFFSET) | ((uint16_t)read(BRK_OFFSET + 1) << 8);
     return 0;
 }
 
-uint8_t mp6502::NOP() {
-    // Implementation goes here
+uint8_t mp6502::NOP() const {
+    switch (opcode) {
+        case 0x1C:
+        case 0x3C:
+        case 0x5C:
+        case 0x7C:
+        case 0xDC:
+        case 0xFC:
+            return 1;
+            break;
+    }
+    return 0;
     return 0;
 }
 
 uint8_t mp6502::RTI() {
-    // Implementation goes here
+    // Pull from stack
+    sp--;
+    flags = read(STACK_OFFSET + sp);
+    sp--;
+    pc = read(STACK_OFFSET + sp);
     return 0;
 }
